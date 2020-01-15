@@ -44,11 +44,12 @@ public class ConsumingRestApplication {
 	public CommandLineRunner run() throws Exception {
 		return args -> {
 			if (args.length != 4) {
-				log.info("Usage ConsumingRestApplication <city> <distance in miles> <latitude> <longitude>");
+			    System.out.println("USAGE:");
+				System.out.println("    LOGGING_LEVEL_ROOT=error SPRING_MAIN_BANNER_MODE=off java -jar target/consuming-rest-0.0.1-SNAPSHOT.jar <city> <distance in miles> <latitude> <longitude>");
 			} else {
 		      List<User> usersDistance = usersClient.getUsersWithInDistance(Double.parseDouble(args[1]), Double.parseDouble(args[2]), Double.parseDouble(args[3]));
 		      List<User> usersCity = usersClient.getUsersInCity(args[0]);
-		      listMerger().merge(usersDistance, usersCity).stream().forEach(user -> log.info(user.toString()));
+		      listMerger().merge(usersDistance, usersCity).stream().forEach(user -> System.out.println(user.toString()));
 			}
 		};
 	}
