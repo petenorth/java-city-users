@@ -26,6 +26,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.ParameterizedTypeReference;
@@ -49,6 +50,8 @@ public class UsersClientTest {
 	@Autowired
 	private UsersClient usersClient;
 	
+	@Value("${users.api.url.base}")
+    private String apiUrlBase;
 
 	@Test
 	public void contextLoads() {
@@ -61,12 +64,12 @@ public class UsersClientTest {
 		List<User> users = new ArrayList<>();
 		users.add(user);
 		ResponseEntity<List<User>> responseEntity = new ResponseEntity<List<User>>(users, HttpStatus.OK);
-		Mockito.when(restTemplate.exchange(UsersClient.API_URL_BASE + "/users",
+		Mockito.when(restTemplate.exchange(apiUrlBase + "/users",
                 HttpMethod.GET, null, new ParameterizedTypeReference<List<User>>() {})).thenReturn(responseEntity);
 		List<User> results = usersClient.getUsersWithInDistance(50.0, LONDON_LATITUDE, LONDON_LONGITUDE);
 		assertEquals(1, results.size());
 		assertEquals(user.toString(), results.get(0).toString());
-		Mockito.verify(restTemplate).exchange(UsersClient.API_URL_BASE + "/users",
+		Mockito.verify(restTemplate).exchange(apiUrlBase + "/users",
                 HttpMethod.GET, null, new ParameterizedTypeReference<List<User>>() {});
 	}
 
@@ -76,24 +79,24 @@ public class UsersClientTest {
 		List<User> users = new ArrayList<>();
 		users.add(user);
 		ResponseEntity<List<User>> responseEntity = new ResponseEntity<List<User>>(users, HttpStatus.OK);
-		Mockito.when(restTemplate.exchange(UsersClient.API_URL_BASE + "/users",
+		Mockito.when(restTemplate.exchange(apiUrlBase + "/users",
                 HttpMethod.GET, null, new ParameterizedTypeReference<List<User>>() {})).thenReturn(responseEntity);
 		List<User> results = usersClient.getUsersWithInDistance(50.0, LONDON_LATITUDE, LONDON_LONGITUDE);
 		assertEquals(0, results.size());
-		Mockito.verify(restTemplate).exchange(UsersClient.API_URL_BASE + "/users",
+		Mockito.verify(restTemplate).exchange(apiUrlBase + "/users",
 				HttpMethod.GET, null, new ParameterizedTypeReference<List<User>>() {});
 	}
 
 	@Test
 	public void testGetUsersWithinDistanceOfServerError() {
 		ResponseEntity<List<User>> responseEntity = new ResponseEntity<List<User>>(HttpStatus.INTERNAL_SERVER_ERROR);
-		Mockito.when(restTemplate.exchange(UsersClient.API_URL_BASE + "/users",
+		Mockito.when(restTemplate.exchange(apiUrlBase + "/users",
                 HttpMethod.GET, null, new ParameterizedTypeReference<List<User>>() {})).thenReturn(responseEntity);
 		ServiceException exception = assertThrows(ServiceException.class, () -> {
 			usersClient.getUsersWithInDistance(50.0, LONDON_LATITUDE, LONDON_LONGITUDE);
 		});
 		assertEquals("<500 INTERNAL_SERVER_ERROR Internal Server Error,[]>", exception.getMessage());
-		Mockito.verify(restTemplate).exchange(UsersClient.API_URL_BASE + "/users",
+		Mockito.verify(restTemplate).exchange(apiUrlBase + "/users",
 				HttpMethod.GET, null, new ParameterizedTypeReference<List<User>>() {});
 	}
 	
@@ -103,36 +106,36 @@ public class UsersClientTest {
 		List<User> users = new ArrayList<>();
 		users.add(user);
 		ResponseEntity<List<User>> responseEntity = new ResponseEntity<List<User>>(users, HttpStatus.OK);
-		Mockito.when(restTemplate.exchange(UsersClient.API_URL_BASE + "/city/" + LONDON_CITY + "/users" ,
+		Mockito.when(restTemplate.exchange(apiUrlBase + "/city/" + LONDON_CITY + "/users" ,
                 HttpMethod.GET, null, new ParameterizedTypeReference<List<User>>() {})).thenReturn(responseEntity);
 		List<User> results = usersClient.getUsersInCity(LONDON_CITY);
 		assertEquals(1, results.size());
 		assertEquals(user.toString(), results.get(0).toString());
-		Mockito.verify(restTemplate).exchange(UsersClient.API_URL_BASE + "/city/" + LONDON_CITY + "/users",
+		Mockito.verify(restTemplate).exchange(apiUrlBase + "/city/" + LONDON_CITY + "/users",
                 HttpMethod.GET, null, new ParameterizedTypeReference<List<User>>() {});
 	}
 
 	@Test
 	public void testGetUsersInCityEmpty() {
 		ResponseEntity<List<User>> responseEntity = new ResponseEntity<List<User>>(new ArrayList<User>(), HttpStatus.OK);
-		Mockito.when(restTemplate.exchange(UsersClient.API_URL_BASE + "/city/" + LONDON_CITY + "/users" ,
+		Mockito.when(restTemplate.exchange(apiUrlBase + "/city/" + LONDON_CITY + "/users" ,
                 HttpMethod.GET, null, new ParameterizedTypeReference<List<User>>() {})).thenReturn(responseEntity);
 		List<User> results = usersClient.getUsersInCity(LONDON_CITY);
 		assertEquals(0, results.size());
-		Mockito.verify(restTemplate).exchange(UsersClient.API_URL_BASE + "/city/" + LONDON_CITY + "/users",
+		Mockito.verify(restTemplate).exchange(apiUrlBase + "/city/" + LONDON_CITY + "/users",
                 HttpMethod.GET, null, new ParameterizedTypeReference<List<User>>() {});
 	}
 	
 	@Test
 	public void testGetUsersInCityServerError() {
 		ResponseEntity<List<User>> responseEntity = new ResponseEntity<List<User>>(HttpStatus.INTERNAL_SERVER_ERROR);
-		Mockito.when(restTemplate.exchange(UsersClient.API_URL_BASE + "/city/" + LONDON_CITY + "/users" ,
+		Mockito.when(restTemplate.exchange(apiUrlBase + "/city/" + LONDON_CITY + "/users" ,
                 HttpMethod.GET, null, new ParameterizedTypeReference<List<User>>() {})).thenReturn(responseEntity);
 		ServiceException exception = assertThrows(ServiceException.class, () -> {
 			usersClient.getUsersInCity(LONDON_CITY);
 		});
 		assertEquals("<500 INTERNAL_SERVER_ERROR Internal Server Error,[]>", exception.getMessage());
-		Mockito.verify(restTemplate).exchange(UsersClient.API_URL_BASE + "/city/" + LONDON_CITY + "/users",
+		Mockito.verify(restTemplate).exchange(apiUrlBase + "/city/" + LONDON_CITY + "/users",
 				HttpMethod.GET, null, new ParameterizedTypeReference<List<User>>() {});
 	}
 

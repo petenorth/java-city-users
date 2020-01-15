@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,9 @@ import org.springframework.web.client.RestTemplate;
 public class UsersClient {
 	
 	private static final double METRES_TO_MILES = 0.000621371;
-	public static final String API_URL_BASE = "https://bpdts-test-app.herokuapp.com/";
+	
+    @Value("${users.api.url.base}")
+    private String apiUrlBase;
 	
 	private static final Logger log = LoggerFactory.getLogger(UsersClient.class);
 	
@@ -23,7 +26,7 @@ public class UsersClient {
 	RestTemplate restTemplate;
 	
 	public List<User> getUsersWithInDistance(Double distance, Double latitude, Double longitude){
-		ResponseEntity<List<User>> userResponse = restTemplate.exchange(API_URL_BASE + "/users",
+		ResponseEntity<List<User>> userResponse = restTemplate.exchange(apiUrlBase + "/users",
                 HttpMethod.GET, null, new ParameterizedTypeReference<List<User>>() {
         });
 		if ( HttpStatus.OK == userResponse.getStatusCode() ) {
@@ -35,7 +38,7 @@ public class UsersClient {
 	}
 	
 	public List<User> getUsersInCity(String city){
-		ResponseEntity<List<User>> userResponse = restTemplate.exchange(API_URL_BASE + "/city/" + city + "/users",
+		ResponseEntity<List<User>> userResponse = restTemplate.exchange(apiUrlBase + "/city/" + city + "/users",
                 HttpMethod.GET, null, new ParameterizedTypeReference<List<User>>() {
         });
 		if ( HttpStatus.OK == userResponse.getStatusCode() ) {
